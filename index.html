@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" class="full-height">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="Currency Conversion Web Application">	
+    <title>Currency Converter</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="./css/mdb.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
+    <style>
+        body {
+            font-weight: 400;
+        }    
+    </style>
+</head>
+
+<body class="creative-lp" style="    background: url('./img/bg-gradient-sky.7ea325995978.png') repeat-x,url('./img/grain.855f29e0c686.png') repeat,#eee; }">
+    <header>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top scrolling-navbar grey">
+            <div class="container-fluid">
+                <a class="navbar-brand font-weight-bold title" href="#!">Currency Converter</a>
+            </div>
+        </nav>
+     </header>
+
+    <!-- Main content -->
+    <main>
+
+        <div class="container">
+        <section>
+            <div class="row my-5 pt-5">
+            <div class="col-md-8 col-lg-8 col-sm-8 offset-md-2"> 
+                <!--Panel-->
+                <div class="card">
+                    <div class="card-header text-center title"> <i class="fa fa-money" aria-hidden="true"></i> Currency Converter</div>
+                    <div class="card-body">
+                        <p class="card-title text-muted"><small><i class="fa fa-info" aria-hidden="true"></i> Enter Amount and select the currency to convert from and to</small></p>
+                            <form>
+                            <div class="form-row">
+                                <div class="col-4">
+                                    <div class="md-form mt-3">
+                                        <input type="number" id="amt" name="amt" class="form-control" required>
+                                        <label for="form1">Amount</label>
+                                    </div>                                
+                                </div>
+                                <div class="col">
+                                    <div class="md-form mt-3">
+                                        <select class="mdb-select colorful-select dropdown-ins cur" id="from">
+                                            <option value="" selected disabled>Select Currency</option>
+                                            
+                                        </select>
+                                        <label>Convert from:</label>
+                                    </div>                                
+                                </div>
+                            </div>
+                            <div class="form-row mt-3">
+                                <div class="col-4 text-center">
+                                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                                </div>
+                                <div class="col">
+                                    <div class="md-form ">
+                                        <select class="mdb-select colorful-select dropdown-ins cur" id="to">
+                                            <option value="" selected disabled>Select Currency</option>
+                                        </select>
+                                        <label>Convert to:</label>
+                                        
+                                    </div>                                
+                                </div>                                
+                            </div>
+                        <div class="form-row mt-3">
+                            <div class="col text-center">
+                                <button type="submit" class="btn btn-mdb-color" id="submit">Convert</button>
+                            </div>
+                        </div>                   
+                       </form>
+                    </div>
+                    <div class="card-footer text-center mdb-color white-text">
+                        <h4 id="result" style="font-weight: 400;"> | </h4>
+                    </div>
+                </div>
+                <!--/.Panel--> 
+                
+                
+            </div>  
+            </div>
+        </section>
+
+            <hr>
+
+
+        </div>
+    </main>
+    <!-- Main content -->
+
+    <!--Footer-->
+    <footer class="page-footer center-on-small-only unique-color-dark pt-0">
+        <div class="footer-copyright">
+            <div class="container-fluid">
+            &copy; Michael Malonza
+            </div>
+        </div>
+    </footer>
+    <!--/.Footer-->
+    <!-- Registering service worker and caching -->
+    <script type="text/javascript" src="./js/app.js"></script>
+    
+    <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="./js/mdb.min.js"></script>
+    
+    <!-- ES6 JavaScript to fetch, append and convert currencies-->
+    <script>
+        let option = '';
+        fetch('currencies.json').then(response => {
+            if(response.status !== 200){
+                console.log('An error occured fetching');
+                return;
+            }
+                        
+         response.json().then(results => {
+             for (const result in results){
+                 for (const c_id in results[result]){
+                     $(".cur").append(`<option value="${results[result][c_id]["id"]}">${results[result][c_id]["id"]} - ${results[result][c_id]["currencyName"]}</option>`);     
+                 }
+             }
+             $('.mdb-select').material_select();
+             console.log(results);
+         });    
+        }).catch( err => console.log(`Error! - ${err}`) );
+        
+</script>
+<script>
+$(document).ready( function (){
+ $(document).on('click', '#submit', function(event){
+  event.preventDefault();
+     let fromCurrency = $('#from').val();
+     let toCurrency = $('#to').val();
+     const amount = $('#amt').val();
+  if(($.trim(amount).length > 1)){
+      const convertCurrency = (amount, fromCurrency, toCurrency, cb) =>      
+          fromCurrency = encodeURIComponent(fromCurrency);
+          toCurrency = encodeURIComponent(toCurrency);
+          const query = `${fromCurrency}_${toCurrency}`;       
+          let url =  `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;      
+
+            fetch(url).then( response => response.json()
+            ).then( data => { 
+                const conversion_rate = data[query];
+                 const total = conversion_rate * amount;
+                  const result = Math.round(total * 100) / 100; 
+                  $('#result').html(`Amount in ${toCurrency}: ${result}`); 
+                }).catch( () => $('#result').html('<span class="text-warning"><small><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Oops! Thats an error. Conversion rate for currency not found.</small></span>') )      
+  }
+else{ $('#result').html('<span class="text-warning"><small><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Please enter an amount and select currency to convert.</small></span>'); }
+});
+});    
+</script>    
+</body>
+</html>

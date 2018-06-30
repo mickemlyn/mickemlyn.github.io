@@ -1,0 +1,8 @@
+@charset "UTF-8";
+/*! my custom css file for Good Life Trust website */
+.dropdown:hover .dropdown-menu {
+    display: block;
+} 
+.nav-item:hover, .dropdown-menu:hover, .nav-item:hover a.nav-link{
+    color: #fb5364 !important;
+} 
