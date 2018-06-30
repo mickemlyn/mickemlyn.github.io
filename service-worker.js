@@ -2,25 +2,25 @@ const staticCacheName = 'cc-static-v3';
 
 // Default files to always cache
 const cacheFiles = [
-	'./',
-	'./index.html',
-	'./js/app.js',
-	'./js/bootstrap.min.js',
-	'./js/jquery-3.2.1.min.js',
-	'./js/mdb.min.js',
-	'./js/popper.min.js',    
-	'./css/bootstrap.min.css',
-	'./css/mdb.css',
-	'./css/style.css',
+	'/',
+	'/index.html',
+	'/js/app.js',
+	'/js/bootstrap.min.js',
+	'/js/jquery-3.2.1.min.js',
+	'/js/mdb.min.js',
+	'/js/popper.min.js',    
+	'/css/bootstrap.min.css',
+	'/css/mdb.css',
+	'/css/style.css',
 	'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css',
-	'./font/roboto/Roboto-Bold.woff',
-	'./font/roboto/Roboto-Bold.woff2',
-	'./font/roboto/Roboto-Light.woff',
-	'./font/roboto/Roboto-Light.woff2',
-	'./font/roboto/Roboto-Regular.woff',
-	'./font/roboto/Roboto-Regular.woff2',
-	'./img/bg-gradient-sky.7ea325995978.png',
-	'./img/grain.855f29e0c686.png'
+	'/font/roboto/Roboto-Bold.woff',
+	'/font/roboto/Roboto-Bold.woff2',
+	'/font/roboto/Roboto-Light.woff',
+	'/font/roboto/Roboto-Light.woff2',
+	'/font/roboto/Roboto-Regular.woff',
+	'/font/roboto/Roboto-Regular.woff2',
+	'/img/bg-gradient-sky.7ea325995978.png',
+	'/img/grain.855f29e0c686.png'
     
 ];
 
@@ -34,7 +34,7 @@ self.addEventListener('install', function(e){
 	    caches.open(staticCacheName).then(function(cache) {
 
 	    	// Add all the default files to the cache
-			console.log('ServiceWorker Caching Files');
+			console.log('ServiceWorker Starting Caching Files');
 			return cache.addAll(cacheFiles);
 	    })
 ); // end e.waitUntil                      
