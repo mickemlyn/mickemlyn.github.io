@@ -47,7 +47,7 @@
                             <div class="form-row">
                                 <div class="col-4">
                                     <div class="md-form mt-3">
-                                        <input type="number" id="amt" name="amt" class="form-control" required>
+                                        <input type="number" min="1" id="amt" name="amt" class="form-control" required>
                                         <label for="form1">Amount</label>
                                     </div>                                
                                 </div>
@@ -117,26 +117,75 @@
     <script type="text/javascript" src="./js/bootstrap.min.js"></script>
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="./js/mdb.min.js"></script>
+<!--     <script type="text/javascript" src="./idb.js"></script>-->
     
     <!-- ES6 JavaScript to fetch, append and convert currencies-->
     <script>
-        let option = '';
-        fetch('currencies.json').then(response => {
-            if(response.status !== 200){
-                console.log('An error occured fetching');
-                return;
-            }
-                        
-         response.json().then(results => {
-             for (const result in results){
+$.getScript('./js/indexedDB.js', function()
+{
+//import idb from 'idb';
+    
+function openDatabase() {
+  // Check if the browser supports service worker
+  if (!navigator.serviceWorker) {
+    return Promise.resolve();
+  }
+
+  return idb.open('currencies', 6, function(upgradeDb) {
+    let store = upgradeDb.createObjectStore('allCurrencies', {
+      keyPath: 'id'
+    });
+    store.createIndex('by-currencyName', 'currencyName');       
+  });
+    console.log('IndexedDB created!');
+} 
+// openDatabase();  
+     let option = '';
+    this.dbPromise = openDatabase();
+    fetch('https://free.currencyconverterapi.com/api/v5/currencies').then(response => {
+        if(response.status !== 200){
+            console.log('An error occured fetching currencies');
+            $('#result').html('<span class="text-warning"><small><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Oops! An error occured fetching currencies.</small></span>');
+            return;
+        }
+     response.json().then(results => {
+        this.dbPromise.then(function(db) {
+            if (!db) return;
+
+            const tx = db.transaction('allCurrencies', 'readwrite');
+            const store = tx.objectStore('allCurrencies');
+            for (const result in results){
                  for (const c_id in results[result]){
-                     $(".cur").append(`<option value="${results[result][c_id]["id"]}">${results[result][c_id]["id"]} - ${results[result][c_id]["currencyName"]}</option>`);     
+                    store.put(results[result][c_id]); 
+                        
                  }
              }
-             $('.mdb-select').material_select();
-             console.log(results);
-         });    
-        }).catch( err => console.log(`Error! - ${err}`) );
+             
+                });  
+         console.log(results);
+     });    
+    }).catch( err => console.log(`Error! Couldnt get currencies - ${err}`) ); 
+    
+
+    this.dbPromise.then( db => {
+        if (!db) return;
+
+        let index = db.transaction('allCurrencies')
+          .objectStore('allCurrencies').index('by-currencyName');
+
+        return index.getAll().then( currencies => {
+            console.log('Currencies fetched from cache');
+//            console.log(currencies);
+             for (const currency in currencies){
+                     $(".cur").append(`<option value="${currencies[currency]["id"]}"> ${currencies[currency]["currencyName"]} - ${currencies[currency]["id"]}</option>`);
+             }
+
+$('.mdb-select').material_select();
+        });
+      });
+       
+    
+});
         
 </script>
 <script>
